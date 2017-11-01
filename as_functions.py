@@ -60,28 +60,6 @@ def train_test_dep_data(deputado_id):
             if score >= final_score:
                 final_score = score
                 prediction = SVM_clf.predict(X_predict)
-
-
-            # print("Support Vector Machines | C = %f | Kernel = %s | Score = %f" % (
-            #     c, kern, score))
-
-    # for c in c_values:
-    #     LR_clf = LogisticRegression(C=c, random_state=randomstate)
-    #     LR_clf.fit(X_train_final, y_train_final)
-    #     score = LR_clf.score(X_test_final, y_test_final)
-    #     print("Linear Regression | C = %f | Score = %f" % (c, score))
-
-    # continue our models test with SVMs
-    # now we try with sklearn neural network
-    # for activ in activ_nn:
-    #     for solv in solver_nn:
-    #         nn_clf = MLPClassifier(hidden_layer_sizes=(500, 400), activation=activ,
-    #                                solver=solv,
-    #                                max_iter=1000)
-    #         nn_clf.fit(X_train_final, y_train_final)
-    #         score = nn_clf.score(X_test_final, y_test_final)
-    #         print("Neural Networks | Activation = %s | Solver = %s | Score = %f" % (
-    #             activ, solv, score))
     results_dic = {'id_deputado': deputado_id, 'pontuacao': score, 'previsao':
         prediction[0]}
     return results_dic
@@ -90,9 +68,14 @@ def train_test_dep_data(deputado_id):
 pd_final_pred = pd.DataFrame(columns=['id_deputado', 'pontuacao', 'previsao'])
 
 for dep in np.nditer(lista_ids):
-    print(train_test_dep_data(deputado_id=dep))
-
-
-    # pd_final_pred.loc[dep]['id_deputado'] = temp_dic['id_deputado']
-
-
+    try:
+        dep_dic = train_test_dep_data(deputado_id=dep)
+        if dep_dic['previsao'] == 0:
+            print("Deputado: {} | Score Modelo: {} | Pevisão (1=presente, "
+                  "0=falta): {}".format(dep_dic['id_deputado'], dep_dic['pontuacao'],
+                  dep_dic['previsao']))
+        else:
+            pass
+    except ValueError:
+        print('{} ou nunca faltou antes/depois de feriado, ou nunca esteve '
+              'presente'.format(dep))

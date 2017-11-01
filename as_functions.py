@@ -74,8 +74,6 @@ for dep in np.nditer(lista_ids):
             print("Deputado: {} | Score Modelo: {} | Pevisão (1=presente, "
                   "0=falta): {}".format(dep_dic['id_deputado'], dep_dic['pontuacao'],
                   dep_dic['previsao']))
-        else:
-            pass
     except ValueError:
         print('{} ou nunca faltou antes/depois de feriado, ou nunca esteve '
               'presente'.format(dep))

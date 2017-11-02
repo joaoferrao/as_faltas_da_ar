@@ -13,7 +13,14 @@ kernel_types = ['linear', 'poly', 'rbf', 'sigmoid']
 activ_nn = ['logistic', 'relu', 'identity']
 solver_nn = ['lbfgs', 'sgd', 'adam']
 raw_data = pd.read_csv('presencas_ar.csv', sep=',')
-lista_ids = pd.read_csv('lista_ids.csv').values
+# lista_ids = pd.read_csv('lista_ids.csv').values
+lista_ids = []
+
+for item in raw_data.itertuples():
+    if item.deputado_id not in lista_ids:
+        lista_ids.append(item.deputado_id)
+
+
 
 def create_dep_dataset(deputado_id):
     # Experimentar filtrar um deputado_id.
@@ -67,7 +74,7 @@ def train_test_dep_data(deputado_id):
 
 pd_final_pred = pd.DataFrame(columns=['id_deputado', 'pontuacao', 'previsao'])
 
-for dep in np.nditer(lista_ids):
+for dep in lista_ids:
     try:
         dep_dic = train_test_dep_data(deputado_id=dep)
         if dep_dic['previsao'] == 0:
@@ -75,5 +82,11 @@ for dep in np.nditer(lista_ids):
                   "0=falta): {}".format(dep_dic['id_deputado'], dep_dic['pontuacao'],
                   dep_dic['previsao']))
     except ValueError:
-        print('{} ou nunca faltou antes/depois de feriado, ou nunca esteve '
-              'presente'.format(dep))
+        pres_passadas = raw_data.filter(items=['deputado_id', 'presente'])['presente'][0] == 1
+        if pres_passadas == 0:
+            print("Deputado: {} | Score Modelo (comportamento sempre igual): 1 | "
+                  "Pevisão ("
+                  "1=presente, "
+                  "0=falta): {}".format(dep, pres_passadas))
+        else:
+            pass
